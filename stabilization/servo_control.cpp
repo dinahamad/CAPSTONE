@@ -23,7 +23,7 @@ void moveHandUp(int amount)
     amount = constrain(amount, 0, WRIST_PITCH_TOP_PULL_RANGE);
 
     // Top servo pulls upward
-    int topAngle = WRIST_PITCH_TOP_START + amount;
+    int topAngle = WRIST_PITCH_TOP_START + amount * WRIST_PITCH_TOP_DIRECTION;
 
     topAngle = constrain(topAngle, WRIST_PITCH_TOP_MIN,WRIST_PITCH_TOP_MAX);
 
@@ -37,9 +37,9 @@ void moveHandDown(int amount)
     amount = constrain(amount, 0, WRIST_PITCH_BOTTOM_PULL_RANGE);
 
     // Bottom servo pulls downward
-    int bottomAngle = WRIST_PITCH_BOTTOM_START + amount;
+    int bottomAngle = WRIST_PITCH_BOTTOM_START + amount * WRIST_PITCH_BOTTOM_DIRECTION;
 
-    bottomAngle = constrain(bottomAngle,WRIST_PITCH_MIN,WRIST_PITCH_MAX);
+    bottomAngle = constrain(bottomAngle,WRIST_PITCH_BOTTOM_MIN,WRIST_PITCH_BOTTOM_MAX);
 
     // Bottom servo pulls; top servo returns to neutral
     wristPitchTopServo.write(WRIST_PITCH_TOP_START);
