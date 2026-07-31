@@ -2,30 +2,56 @@
 #include <ESP32Servo.h>
 #include "servo_control.h"
 
-// create servo objects
+// servo objects
 Servo wristPitchTopServo;
 Servo wristPitchBottomServo;
 
+
 void setupServos()
 {
-    wristPitchServo.attach(WRIST_PITCH_TOP_PIN);
-    wristPitchServo.attach(WRIST_PITCH_BOTTOM_PIN);
+    // Connect each servo object to its pin
+    wristPitchTopServo.attach(WRIST_PITCH_TOP_PIN);
+    wristPitchBottomServo.attach(WRIST_PITCH_BOTTOM_PIN);
 
-    // Start all servos at their centre positions
-    wristPitchServo.write(WRIST_PITCH_TOP_START);
-    wristPitchServo.write(WRIST_PITCH_BOTTOM_START);
+    // Put both servos at their starting positions
+    stopWrist();
 }
 
-void moveWristTopPitch(int angle)
+void moveHandUp(int amount)
 {
-    angle = constrain(angle, WRIST_PITCH_TOP_MIN, WRIST_PITCH_TOP_MAX);
-    wristPitchTopServo.write(angle);
+    // amount must be between 0 max pull amount
+    amount = constrain(amount, 0, WRIST_PITCH_TOP_PULL_RANGE);
+
+    // Top servo pulls upward
+    int topAngle = WRIST_PITCH_TOP_START + amount;
+
+    topAngle = constrain(topAngle, WRIST_PITCH_TOP_MIN,WRIST_PITCH_TOP_MAX);
+
+    // Top servo pulls; bottom servo returns to neutral
+    wristPitchTopServo.write(topAngle);
+    wristPitchBottomServo.write(WRIST_PITCH_BOTTOM_START);
 }
 
-void moveWristBottomPitch(int angle)
+void moveHandDown(int amount)
 {
-    angle = constrain(angle, WRIST_PITCH_BOTTOM_MIN, WRIST_PITCH_BOTTOM_MAX);
-    wristPitchBottomServo.write(angle);
+    amount = constrain(amount, 0, WRIST_PITCH_BOTTOM_PULL_RANGE);
+
+    // Bottom servo pulls downward
+    int bottomAngle = WRIST_PITCH_BOTTOM_START + amount;
+
+    bottomAngle = constrain(bottomAngle,WRIST_PITCH_MIN,WRIST_PITCH_MAX);
+
+    // Bottom servo pulls; top servo returns to neutral
+    wristPitchTopServo.write(WRIST_PITCH_TOP_START);
+    wristPitchBottomServo.write(bottomAngle);
 }
 
+
+
+void stopWrist()
+{
+    // Neither servo actively corrects the wrist
+    wristPitchTopServo.write(WRIST_PITCH_TOP_START);
+    wristPitchBottomServo.write(WRIST_PITCH_BOTTOM_START);
+}
 
