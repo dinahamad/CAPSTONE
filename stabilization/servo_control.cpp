@@ -6,7 +6,6 @@
 Servo wristPitchTopServo;
 Servo wristPitchBottomServo;
 
-
 void setupServos()
 {
     // Connect each servo object to its pin
@@ -25,8 +24,6 @@ void moveHandUp(int amount)
     // Top servo pulls upward
     int topAngle = WRIST_PITCH_TOP_START + amount * WRIST_PITCH_TOP_DIRECTION;
 
-    topAngle = constrain(topAngle, WRIST_PITCH_TOP_MIN,WRIST_PITCH_TOP_MAX);
-
     // Top servo pulls; bottom servo returns to neutral
     wristPitchTopServo.write(topAngle);
     wristPitchBottomServo.write(WRIST_PITCH_BOTTOM_START);
@@ -39,18 +36,15 @@ void moveHandDown(int amount)
     // Bottom servo pulls downward
     int bottomAngle = WRIST_PITCH_BOTTOM_START + amount * WRIST_PITCH_BOTTOM_DIRECTION;
 
-    bottomAngle = constrain(bottomAngle,WRIST_PITCH_BOTTOM_MIN,WRIST_PITCH_BOTTOM_MAX);
-
     // Bottom servo pulls; top servo returns to neutral
     wristPitchTopServo.write(WRIST_PITCH_TOP_START);
     wristPitchBottomServo.write(bottomAngle);
 }
 
 
-
 void stopWrist()
 {
-    // Neither servo actively corrects the wrist
+    // Neither servo actively corrects the wrist, put back to neutral
     wristPitchTopServo.write(WRIST_PITCH_TOP_START);
     wristPitchBottomServo.write(WRIST_PITCH_BOTTOM_START);
 }
