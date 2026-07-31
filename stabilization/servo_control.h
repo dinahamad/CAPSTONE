@@ -27,7 +27,6 @@ const int WRIST_PITCH_TOP_PULL_RANGE = 35;
 const int WRIST_PITCH_BOTTOM_PULL_RANGE = 35;
 
 void setupServos();
-void centerServos();
-void moveHandUp();
-void moveHandDown();
+void moveHandUp(int amount);
+void moveHandDown(int amount);
 void stopWrist();
