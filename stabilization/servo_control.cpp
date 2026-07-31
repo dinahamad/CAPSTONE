@@ -2,38 +2,30 @@
 #include <ESP32Servo.h>
 #include "servo_control.h"
 
-Servo wristPitchServo;
-//Servo wristYawServo; final goal: have three servos
-//Servo elbowServo;
+// create servo objects
+Servo wristPitchTopServo;
+Servo wristPitchBottomServo;
 
 void setupServos()
 {
-    wristPitchServo.attach(WRIST_PITCH_PIN);
-    //wristYawServo.attach(WRIST_SIDE_PIN);
-    //elbowServo.attach(ELBOW_PIN);
+    wristPitchServo.attach(WRIST_PITCH_TOP_PIN);
+    wristPitchServo.attach(WRIST_PITCH_BOTTOM_PIN);
 
     // Start all servos at their centre positions
-    wristPitchServo.write(WRIST_PITCH_START);
-    //wristSideServo.write(WRIST_YAW_START);
-    //elbowServo.write(ELBOW_START);
+    wristPitchServo.write(WRIST_PITCH_TOP_START);
+    wristPitchServo.write(WRIST_PITCH_BOTTOM_START);
 }
 
-void moveWristPitch(int angle)
+void moveWristTopPitch(int angle)
 {
-    angle = constrain(angle, WRIST_PITCH_MIN, WRIST_PITCH_MAX);
-    wristPitchServo.write(angle);
+    angle = constrain(angle, WRIST_PITCH_TOP_MIN, WRIST_PITCH_TOP_MAX);
+    wristPitchTopServo.write(angle);
 }
 
-/*
-void moveWristYaw(int angle)
+void moveWristBottomPitch(int angle)
 {
-    angle = constrain(angle, WRIST_YAW_MIN, WRIST_YAW_MAX);
-    wristSideServo.write(angle);
+    angle = constrain(angle, WRIST_PITCH_BOTTOM_MIN, WRIST_PITCH_BOTTOM_MAX);
+    wristPitchBottomServo.write(angle);
 }
 
-void moveElbow(int angle)
-{
-    angle = constrain(angle, ELBOW_MIN, ELBOW_MAX);
-    elbowServo.write(angle);
-}
-*/
+
