@@ -19,7 +19,7 @@ void setupServos()
 void moveHandUp(int amount)
 {
     // amount must be between 0 max pull amount
-    amount = constrain(amount, 0, WRIST_PITCH_TOP_PULL_RANGE);
+    amount = constrain(amount, WRIST_PITCH_TOP_MIN, WRIST_PITCH_TOP_MAX);
 
     // Top servo pulls upward
     int topAngle = WRIST_PITCH_TOP_START + amount * WRIST_PITCH_TOP_DIRECTION;
@@ -31,7 +31,7 @@ void moveHandUp(int amount)
 
 void moveHandDown(int amount)
 {
-    amount = constrain(amount, 0, WRIST_PITCH_BOTTOM_PULL_RANGE);
+    amount = constrain(amount, WRIST_PITCH_BOTTOM_MIN, WRIST_PITCH_BOTTOM_MAX);
 
     // Bottom servo pulls downward
     int bottomAngle = WRIST_PITCH_BOTTOM_START + amount * WRIST_PITCH_BOTTOM_DIRECTION;
