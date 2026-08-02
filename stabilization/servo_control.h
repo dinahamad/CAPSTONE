@@ -1,34 +1,44 @@
 #pragma once
 #include <Arduino.h>
+#include <ESP32Servo.h>
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+// This file is for the servos that pull the hand up and down relative to the forearm (pitch)
+/////////////////////////////////////////////////////////////////////////////////////////////
+
 
 // --------- SERVO CONSTANTS
 // Servo pins, pins i can use: GPIO 27, 33, 32, 26
-const int WRIST_PITCH_TOP_PIN = 27; 
-const int WRIST_PITCH_BOTTOM_PIN = 33;
+const int TOP_SERVO_PIN = 27; 
+const int BOTTOM_SERVO_PIN = 33;
 
-// Servo neutral positions, based on gemoetry of arm
-const int WRIST_PITCH_TOP_START = 90;
-const int WRIST_PITCH_BOTTOM_START = 90;
+// Positions that wrist and forearm IMU's are parallel 
+// pitch (up down) and - (side to side wrist) are zero
+const int TOP_SERVO_ORIGIN_ANGLE = 90;
+const int BOTTOM_SERVO_ORIGIN_ANGLE = 90;
 
 // Servo soft safety limits
-const int WRIST_PITCH_TOP_MIN = 40;
-const int WRIST_PITCH_TOP_MAX = 140;
+// 90 deg is middle, 30 is flexed down, 150 is flexed up
+// 0-> 180 
+const int TOP_SERVO_MIN_ANGLE = 30;
+const int TOP_SERVO_MAX_ANGLE = 150;
 
-const int WRIST_PITCH_BOTTOM_MIN = 40;
-const int WRIST_PITCH_BOTTOM_MAX = 140;
+const int BOTTOM_SERVO_MIN_ANGLE = 30;
+const int BOTTOM_SERVO_MAX_ANGLE = 150;
 
-// Servo Pull directions
-// Change sign if a servo turns the wrong way
-const int WRIST_PITCH_TOP_DIRECTION = 1;
-const int WRIST_PITCH_BOTTOM_DIRECTION = 1;
+// Servo Pull directions, change sign if servo pulling in wrong direction
+//const int TOP_SERVO_DIRECTION = 1;     
+//const int BOTTOM_SERVO_DIRECTION = 1; 
 
+// Functions
 void setupServos();
-void setWristCorrection(float correction);
+void setWristPitchValue(float correction);
 void moveHandUp(int amount);
 void moveHandDown(int amount);
-void stopWrist();
+void originAngles();
+void endProgram();
 
-// Information for debugging/UI
-int getWristPitchTopServoCommand();
-int getWristPitchBottomServoCommand();
+// Information for debugging
+int getTopServoAngle();
+int getBottomServoAngle();
 bool areServosEnabled();
