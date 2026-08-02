@@ -23,6 +23,12 @@ const int WRIST_PITCH_TOP_DIRECTION = 1;
 const int WRIST_PITCH_BOTTOM_DIRECTION = 1;
 
 void setupServos();
+void setWristCorrection(float correction);
 void moveHandUp(int amount);
 void moveHandDown(int amount);
 void stopWrist();
+
+// Information for debugging/UI
+int getWristPitchTopServoCommand();
+int getWristPitchBottomServoCommand();
+bool areServosEnabled();
