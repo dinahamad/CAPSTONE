@@ -28,6 +28,29 @@ void setupServos() {
     originAngles();
 }
 
+// this function may be called my main.cpp
+void setServoAngles(float topTargetAngle, float bottomTargetAngle) {
+    if (!servosEnabled) {return;}
+
+    int safeTopAngle = constrain(
+        (int)round(topTargetAngle),
+        TOP_SERVO_MIN_ANGLE,
+        TOP_SERVO_MAX_ANGLE
+    );
+
+    int safeBottomAngle = constrain(
+        (int)round(bottomTargetAngle),
+        BOTTOM_SERVO_MIN_ANGLE,
+        BOTTOM_SERVO_MAX_ANGLE
+    );
+
+    topServo.write(safeTopAngle);
+    bottomServo.write(safeBottomAngle);
+
+    TopServoCurrentAngle = safeTopAngle;
+    BottomServoCurrentAngle = safeBottomAngle;
+}
+
 // FUNCTIONS FOR VOLUNTARY MOVEMENT AKA WHERE THE "CENTER" OF THE HAND IS///////////////////////////////////////////////////////////
 void setWristPitchValue(float correction) {
     if (correction > 0) {moveHandUp((int)correction);}
