@@ -1,16 +1,17 @@
 #pragma once
 #include <Arduino.h>
 #include <ESP32Servo.h>
+#include "pins.h"
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 // This file is for the servos that pull the hand up and down relative to the forearm (pitch)
 /////////////////////////////////////////////////////////////////////////////////////////////
 
 
-// --------- SERVO CONSTANTS
+// --------- SERVO CONSTANTS - added in pins.h
 // Servo pins, pins i can use: GPIO 27, 33, 32, 26
-const int TOP_SERVO_PIN = 27; 
-const int BOTTOM_SERVO_PIN = 33;
+//const int TOP_SERVO_PIN = 27; 
+//const int BOTTOM_SERVO_PIN = 33;
 
 // Positions that wrist and forearm IMU's are parallel 
 // pitch (up down) and - (side to side wrist) are zero
@@ -32,6 +33,9 @@ const int BOTTOM_SERVO_MAX_ANGLE = 150;
 
 // Functions
 void setupServos();
+
+// for main.cpp. Sets absolute angles for the servos
+void setServoAngles(float topTargetAngle, float bottomTargetAngle);
 
 // for voluntary movement
 void setWristPitchValue(float correction);
