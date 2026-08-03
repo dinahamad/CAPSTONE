@@ -32,10 +32,17 @@ const int BOTTOM_SERVO_MAX_ANGLE = 150;
 
 // Functions
 void setupServos();
+
+// for voluntary movement
 void setWristPitchValue(float correction);
 void moveHandUp(int amount);
 void moveHandDown(int amount);
+
+// for tremor movement
+
+// move servos to origin
 void originAngles();
+
 void endProgram();
 
 // Information for debugging
