@@ -661,7 +661,7 @@ void stopSystem()
         originAngles();
         // Give the servos time to reach origin before detaching
         delay(300);
-        endProgram(); // defined in servo_control.h
+        endProgramServos(); // defined in servo_control.h
     }
 
     servoConnected[0] = false;
