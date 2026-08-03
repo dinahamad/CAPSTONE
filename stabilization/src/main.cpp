@@ -11,6 +11,7 @@
 
 #include "pins.h"
 #include "globals.h"
+#include "servo_control.h"
 
 
 // ============================================================
@@ -631,6 +632,10 @@ void startSystem()
 
     resetOrientation();
 
+    if (!areServosEnabled()) {setupServos();}
+    servoConnected[0] = areServosEnabled();
+    servoConnected[1] = areServosEnabled();
+
     startTime_us =
         micros();
 
@@ -650,9 +655,17 @@ void startSystem()
 
 void stopSystem()
 {
-    systemRunning =
-        false;
+    systemRunning = false;
+    
+    if (areServosEnabled()) {
+        originAngles();
+        // Give the servos time to reach origin before detaching
+        delay(300);
+        endProgram(); // defined in servo_control.h
+    }
 
+    servoConnected[0] = false;
+    servoConnected[1] = false;
     Serial.println(
         "SYSTEM STOPPED"
     );
