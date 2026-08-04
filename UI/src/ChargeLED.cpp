@@ -1,9 +1,6 @@
 #include <Arduino.h>
 #include "ChargeLED.h"
-
-#define CHARGE_LED1 12
-#define CHARGE_LED2 27
-#define CHARGE_LED3 33
+#include "Pins.h"
 
 
 unsigned long lastBlink = 0;
@@ -27,6 +24,12 @@ void setLEDs(bool led1, bool led2, bool led3) {
     digitalWrite(CHARGE_LED1, led1);
     digitalWrite(CHARGE_LED2, led2);
     digitalWrite(CHARGE_LED3, led3);
+}
+
+void LEDsoff() {
+    digitalWrite(CHARGE_LED1, LOW);
+    digitalWrite(CHARGE_LED2, LOW);
+    digitalWrite(CHARGE_LED3, LOW);
 }
 
 

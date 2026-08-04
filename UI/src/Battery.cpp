@@ -1,8 +1,6 @@
 #include <Arduino.h>
 #include "Battery.h"
-
-// On the Feather V2, the battery divider is hardwired to A13
-#define VBAT_PIN A13
+#include "Pins.h"
 
 
 void Battery_init() {

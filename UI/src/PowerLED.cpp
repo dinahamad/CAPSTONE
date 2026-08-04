@@ -1,17 +1,6 @@
 #include <Arduino.h>
 #include "PowerLED.h"
-
-#define LED_RED   15
-#define LED_GREEN 32
-#define LED_BLUE  14
-
-#define RED_CH    0
-#define GREEN_CH  1
-#define BLUE_CH   2
-
-#define PWM_FREQ  5000
-#define PWM_RES   8
-
+#include "Pins.h"
 
 void LED_init() {
 
@@ -40,6 +29,13 @@ void LED_awake() {
   ledcWrite(RED_CH, 0);
   ledcWrite(GREEN_CH, 255);
   ledcWrite(BLUE_CH, 0);
+}
+
+void LED_charging() {
+  // Blue
+  ledcWrite(RED_CH, 0);
+  ledcWrite(GREEN_CH, 0);
+  ledcWrite(BLUE_CH, 255);
 }
 
 

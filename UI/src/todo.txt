@@ -1,0 +1,4 @@
+
+- add sensing only button
+- add error LED
+- add send battery percentage
