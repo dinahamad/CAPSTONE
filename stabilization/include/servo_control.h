@@ -47,7 +47,7 @@ void moveHandDown(int amount);
 // move servos to origin
 void originAngles();
 
-void endProgram();
+void endProgramServos(); // named endProgram() before
 
 // Information for debugging
 int getTopServoAngle();
