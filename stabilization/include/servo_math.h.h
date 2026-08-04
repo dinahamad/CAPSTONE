@@ -1,0 +1,33 @@
+#include "globals.h"
+
+const int HAND_IMU = 0;
+const int FOREARM_IMU = 1;
+
+const int ROLL = 0;
+const int PITCH = 1;
+const int YAW = 2;
+
+// of Hand IMU
+float rollAngleHand() {return orientation[HAND_IMU][ROLL];} // units: degrees
+float pitchAngleHand(){return orientation[HAND_IMU][PITCH];}
+float yawAngleHand(){return orientation[HAND_IMU][YAW];}
+
+// of forearm IMU
+float forearmRoll(){return orientation[FOREARM_IMU][ROLL];}
+float forearmPitch(){return orientation[FOREARM_IMU][PITCH];}
+float forearmYaw(){return orientation[FOREARM_IMU][YAW];}
+
+// angle relative difference between hand and forearm - all basic uses this
+float wristRoll(){return relativeOrientation[ROLL];}
+float wristPitch(){return relativeOrientation[PITCH];}
+float wristYaw(){return relativeOrientation[YAW];}
+
+// DNE
+// between hand and forearm
+// float gettremorFrequencyHz(){return tremorFrequencyHz;}
+// float batteryPercentage(); // disconnect servos once reaches a certain battery
+
+
+// Troubleshooting
+bool isHandIMUConnected(){return imuConnected[HAND_IMU_INDEX];
+bool isForearmIMUConnected(){return imuConnected[FOREARM_IMU_INDEX];}
