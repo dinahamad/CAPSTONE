@@ -44,3 +44,13 @@
 // ============================================================
 
 #define ALPHA 0.98f
+
+// UART Link
+#define LINK_RX_PIN 7;
+#define LINK_TX_PIN 8;
+
+// Battery percentage
+#define USB_VBUS_PIN 36;
+
+// Comment this out to disable UART communication
+#define USE_UART_LINK
