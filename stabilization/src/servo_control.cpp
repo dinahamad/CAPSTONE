@@ -112,7 +112,7 @@ void originAngles() {
     BottomServoCurrentAngle = BOTTOM_SERVO_ORIGIN_ANGLE;   
 }
 
-void endProgram() {
+void endProgramServos() {
   topServo.detach();
   bottomServo.detach();
   servosEnabled = false;
