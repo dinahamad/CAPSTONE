@@ -70,4 +70,5 @@ extern float accelBias[NUM_IMUS][3];
 // SERVOS
 // ============================================================
 
-extern bool servoConnected[2];
+extern bool topServoConnected;
+extern bool bottomServoConnected;
