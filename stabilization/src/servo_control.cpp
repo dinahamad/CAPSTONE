@@ -15,22 +15,22 @@ Servo bottomServo;
 int TopServoCurrentAngle = TOP_SERVO_ORIGIN_ANGLE;
 int BottomServoCurrentAngle = BOTTOM_SERVO_ORIGIN_ANGLE;
 
-// Whether the servos are currently attached
-bool servosEnabled = false;
-
 // connect servos to microcontroller
 void setupServos() {
     // Connect each servo object to its pin
+    if (servosConnected = true){return}; // if they are already connected, return
     topServo.attach(TOP_SERVO_PIN);
     bottomServo.attach(BOTTOM_SERVO_PIN);
-    servosEnabled = true; // they are attached
+
     // Put both servos at their starting positions
     originAngles();
+    topServoConnected = true;
+    bottomServoConnected = true;
 }
 
 // this function may be called my main.cpp
 void setServoAngles(float topTargetAngle, float bottomTargetAngle) {
-    if (!servosEnabled) {return;}
+    if (!servosConnected) {return;}
 
     int safeTopAngle = constrain(
         (int)round(topTargetAngle),
@@ -115,7 +115,8 @@ void originAngles() {
 void endProgramServos() {
   topServo.detach();
   bottomServo.detach();
-  servosEnabled = false;
+  topServoConnected = false;
+  bottomServoConnected = false;
 }
 
 int getTopServoAngle() {
@@ -127,5 +128,5 @@ int getBottomServoAngle() {
 };
 
 bool areServosEnabled(){
-    return servosEnabled;
+    return (topServoConnected && bottomServoConnected);
 };
