@@ -1,4 +1,4 @@
-#include "tremor_detection_improved.h"
+#include "tremor_detection.h"
 #include <ESP32Servo.h>
 #include <math.h>
 
