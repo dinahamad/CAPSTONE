@@ -7,6 +7,7 @@
 // This file is for the servos that pull the hand up and down relative to the forearm (pitch)
 /////////////////////////////////////////////////////////////////////////////////////////////
 
+bool servosConnected = (topServoConnected && bottomServoConnected); // one variable for both
 
 // --------- SERVO CONSTANTS - added in pins.h
 // Servo pins, pins i can use: GPIO 27, 33, 32, 26
@@ -43,6 +44,7 @@ void moveHandUp(int amount);
 void moveHandDown(int amount);
 
 // for tremor movement
+//void tremorCorrection(float correction);
 
 // move servos to origin
 void originAngles();
