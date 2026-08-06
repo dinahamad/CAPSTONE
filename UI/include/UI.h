@@ -8,6 +8,8 @@ void Button_waitForRelease();
 bool validButtonPress(uint8_t BUTTON_NUMBER);
 void Button_init();
 
+void Wake_init();
+
 void goToLightSleep();
 void changeStableState();
 
