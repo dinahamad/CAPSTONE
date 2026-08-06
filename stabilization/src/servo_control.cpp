@@ -23,8 +23,8 @@ void setupServos() {
 
     // Put both servos at their starting positions
     originAngles();
-    servoConnected[0] = true;
-    servoConnected[1] = true;
+    servosConnected[0] = true;
+    servosConnected[1] = true;
 }
 
 // this function may be called my main.cpp
@@ -113,8 +113,8 @@ void originAngles() {
 void endProgramServos() {
   topServo.detach();
   bottomServo.detach();
-  servoConnected[0] = false;
-  servoConnected[1] = false;
+  servosConnected[0] = false;
+  servosConnected[1] = false;
 }
 
 int getTopServoAngle() {
@@ -126,5 +126,5 @@ int getBottomServoAngle() {
 };
 
 bool areServosEnabled(){
-    return (topServoConnected && bottomServoConnected);
+    return (servosConnected[0] && servosConnected[1]);
 };
