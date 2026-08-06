@@ -4,6 +4,7 @@
 // Main
 constexpr uint8_t BUTTON_PIN   = 37;
 constexpr uint8_t USB_VBUS_PIN = 36;
+constexpr uint8_t USB_VBUS_PIN = 36;
 
 // Battery
 constexpr uint8_t VBAT_PIN = A13;
