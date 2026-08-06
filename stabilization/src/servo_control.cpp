@@ -2,6 +2,7 @@
 #include <ESP32Servo.h>
 #include "servo_control.h"
 #include <iostream>
+#include "globals.h"
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 // This file is for the servos that pull the hand up and down relative to the forearm (pitch)
