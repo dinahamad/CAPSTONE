@@ -46,18 +46,24 @@ void loop() {
     LED_awake();      // Green LED
   }
 
-
-  if (systemState == NORMAL) {
+  if (systemState == AWAKE) {
 
     if (millis() - lastPress > lockoutTime) {
 
-      if (validButtonPress()) {
+      if (validButtonPress(BUTTON_PIN)) {
 
         lastPress = millis();
 
         systemState = LIGHT_SLEEP;
 
         goToLightSleep();
+      }
+
+      if (validButtonPress(STABLE_PIN)) {
+
+        lastPress = millis();
+
+        changeStableState();
       }
     }
   }
