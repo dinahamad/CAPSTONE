@@ -14,7 +14,48 @@ void UARTLink_init()
 #endif
 }
 
-bool UARTLink_sendState(State state)
+bool UARTLink_sendState(SystemState state)
+{
+#ifdef USE_UART_LINK
+
+    for (int attempt = 0; attempt < 3; attempt++)
+    {
+        if (state == LIGHT_SLEEP)
+            Link.println("SLEEP");
+        else
+            Link.println("AWAKE");
+
+        unsigned long start = millis();
+
+        while (millis() - start < 500)
+        {
+            if (Link.available())
+            {
+                String reply = Link.readStringUntil('\n');
+                reply.trim();
+
+                if (reply == "ACK")
+                {
+                    Serial.println("ACK received.");
+                    return true;
+                }
+            }
+        }
+
+        Serial.println("Retrying...");
+    }
+
+    Serial.println("No ACK received.");
+    return false;
+
+#else
+
+    return true;
+
+#endif
+}
+
+bool UARTLink_sendState(StableState state)
 {
 #ifdef USE_UART_LINK
 
