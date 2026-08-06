@@ -633,8 +633,8 @@ void startSystem()
     resetOrientation();
 
     if (!areServosEnabled()) {setupServos();}
-    servoConnected[0] = areServosEnabled();
-    servoConnected[1] = areServosEnabled();
+    servosConnected[0] = areServosEnabled();
+    servosConnected[1] = areServosEnabled();
 
     startTime_us =
         micros();
@@ -664,8 +664,8 @@ void stopSystem()
         endProgramServos(); // defined in servo_control.h
     }
 
-    servoConnected[0] = false;
-    servoConnected[1] = false;
+    servosConnected[0] = false;
+    servosConnected[1] = false;
     Serial.println(
         "SYSTEM STOPPED"
     );
@@ -722,12 +722,12 @@ void sendStatus()
         : "DISCONNECTED,";
 
     message +=
-        servoConnected[0]
+        servosConnected[0]
         ? "CONNECTED,"
         : "DISCONNECTED,";
 
     message +=
-        servoConnected[1]
+        servosConnected[1]
         ? "CONNECTED,"
         : "DISCONNECTED,";
 
