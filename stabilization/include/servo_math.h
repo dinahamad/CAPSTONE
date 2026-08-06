@@ -1,5 +1,10 @@
-#include "globals.h"
-#include "servo_control.h"
+//#include "globals.h"
+//#include "servo_control.h"
+
+//#pragma once
+
+//bool isHandIMUConnected();
+//bool isForearmIMUConnected();
 
 // useful variables from main
 // float getRelativeOrientation{return relativeOrientation;} // should be a degree value btween 0 -> 180deg
