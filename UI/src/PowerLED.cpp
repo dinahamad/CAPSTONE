@@ -18,7 +18,7 @@ void LED_init() {
 
 void LED_sleep() {
   // Orange
-  ledcWrite(RED_CH, 255);
+  ledcWrite(RED_CH, LED_BRIGHTNESS);
   ledcWrite(GREEN_CH, 0);
   ledcWrite(BLUE_CH, 0);
 }
@@ -27,7 +27,7 @@ void LED_sleep() {
 void LED_awake() {
   // Blue
   ledcWrite(RED_CH, 0);
-  ledcWrite(GREEN_CH, 255);
+  ledcWrite(GREEN_CH, LED_BRIGHTNESS);
   ledcWrite(BLUE_CH, 0);
 }
 
@@ -35,7 +35,7 @@ void LED_charging() {
   // Blue
   ledcWrite(RED_CH, 0);
   ledcWrite(GREEN_CH, 0);
-  ledcWrite(BLUE_CH, 255);
+  ledcWrite(BLUE_CH, LED_BRIGHTNESS);
 }
 
 

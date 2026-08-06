@@ -3,6 +3,9 @@
 #include "UARTLink.h"
 #include "State.h"
 
+static volatile bool ackReceived = false;
+static float slaveBattery = 100.0;
+
 #ifdef USE_UART_LINK
 HardwareSerial Link(1);
 #endif
@@ -29,17 +32,9 @@ bool UARTLink_sendState(SystemState state)
 
         while (millis() - start < 500)
         {
-            if (Link.available())
-            {
-                String reply = Link.readStringUntil('\n');
-                reply.trim();
-
-                if (reply == "ACK")
-                {
-                    Serial.println("ACK received.");
+                UARTLink_receive();
+                if (ackReceived)
                     return true;
-                }
-            }
         }
 
         Serial.println("Retrying...");
@@ -61,10 +56,10 @@ bool UARTLink_sendState(StableState state)
 
     for (int attempt = 0; attempt < 3; attempt++)
     {
-        if (state == LIGHT_SLEEP)
-            Link.println("SLEEP");
+        if (state == SENSE)
+            Link.println("SENSE");
         else
-            Link.println("AWAKE");
+            Link.println("STABILIZE");
 
         unsigned long start = millis();
 
@@ -72,14 +67,9 @@ bool UARTLink_sendState(StableState state)
         {
             if (Link.available())
             {
-                String reply = Link.readStringUntil('\n');
-                reply.trim();
-
-                if (reply == "ACK")
-                {
-                    Serial.println("ACK received.");
+                UARTLink_receive();
+                if (ackReceived)
                     return true;
-                }
             }
         }
 
@@ -96,20 +86,32 @@ bool UARTLink_sendState(StableState state)
 #endif
 }
 
-// For recieving
-// if (Link.available())
-// {
-//     String msg = Link.readStringUntil('\n');
-//     msg.trim();
+void UARTLink_receive()
+{
+#ifdef USE_UART_LINK
 
-//     if (msg == "SLEEP")
-//     {
-//         // enter sleep mode
-//     }
-//     else if (msg == "AWAKE")
-//     {
-//         // wake mode
-//     }
+    while (Link.available())
+    {
+        String command = Link.readStringUntil('\n');
+        command.trim();
 
-//     Link.println("ACK");
-// }
+        Serial.print("UART RX: ");
+        Serial.println(command);
+
+        if (command == "ACK")
+        {
+            ackReceived = true;
+        }
+        else if (command.startsWith("BAT:"))
+        {
+            slaveBattery = command.substring(4).toFloat();
+        }
+    }
+
+#endif
+}
+
+float UARTLink_getSlaveBattery()
+{
+    return slaveBattery;
+}

@@ -17,6 +17,7 @@ void setup() {
 
   Button_init();
   LED_init();
+  Wake_init();
   Battery_init();
   ChargeLED_init();
   USB_detect_init();
@@ -32,11 +33,27 @@ void setup() {
 
 void loop() {
 
-  float battery = Battery_getPercentage();
+  float UI_battery = Battery_getPercentage();
   bool usb = USB_connected();
+  
+  Serial.print("UI Charge: ");
+  Serial.print(UI_battery, 1);
+  Serial.println("%");
+  
+  UARTLink_receive();
+  float Stabil_battery = UARTLink_getSlaveBattery();
+
+  Serial.print("Stabil. Charge: ");
+  Serial.print(Stabil_battery, 1);
+  Serial.println("%");
+
+  float total_battery = (UI_battery+Stabil_battery)/2;
+  Serial.print("Total. Charge: ");
+  Serial.print(total_battery, 1);
+  Serial.println("%");
 
   // Update battery/charging LEDs continuously
-  ChargeLED_update(battery, usb);
+  ChargeLED_update(total_battery, usb);
 
   // Update main status LED
   if (usb) { 
@@ -53,8 +70,6 @@ void loop() {
       if (validButtonPress(BUTTON_PIN)) {
 
         lastPress = millis();
-
-        systemState = LIGHT_SLEEP;
 
         goToLightSleep();
       }

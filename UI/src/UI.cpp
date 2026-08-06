@@ -11,6 +11,7 @@ const unsigned long pressTime = 100;      // must hold >100ms
 
 void Button_init() {
     pinMode(BUTTON_PIN, INPUT);
+    pinMode(STABLE_PIN, INPUT);
 }
 
 void USB_detect_init() {
@@ -54,12 +55,31 @@ bool validButtonPress(uint8_t BUTTON_NUMBER) {
   return false;
 }
 
+void Wake_init()
+{
+    pinMode(WAKE_OUT_PIN, OUTPUT);
+    digitalWrite(WAKE_OUT_PIN, LOW);
+}
+
+void Wake_slave()
+{
+    Serial.println("WAKE HIGH");
+
+    digitalWrite(WAKE_OUT_PIN, HIGH);
+    delay(1000);
+
+    Serial.println("WAKE LOW");
+
+    digitalWrite(WAKE_OUT_PIN, LOW);
+}
+
 void goToLightSleep() {
 
   waitForRelease();
 
   Serial.println("Mode = Light Sleep");
-  //UARTLink_sendState(systemState);
+  systemState = LIGHT_SLEEP;
+  UARTLink_sendState(systemState);
 
   LED_off();
   LEDsoff();
@@ -74,9 +94,10 @@ void goToLightSleep() {
   esp_light_sleep_start();
 
   Serial.println("Mode = Awake");
-  //UARTLink_sendState(systemState);
-
   systemState = AWAKE;
+  Wake_slave();
+  delay(100);
+  UARTLink_sendState(systemState);
 
   waitForRelease();
 }
@@ -86,12 +107,12 @@ void changeStableState(){
   if (stableState == SENSE) {
     Serial.println("Mode = Stabilizing");
     stableState = STABILIZE;
-    //UARTLink_sendState(stableState);
+    UARTLink_sendState(stableState);
   }
   else if (stableState == STABILIZE) {
     Serial.println("Mode = Only sensing");
     stableState = SENSE;
-    //UARTLink_sendState(stableState);
+    UARTLink_sendState(stableState);
   }
 
 }
