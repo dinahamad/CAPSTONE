@@ -1,4 +1,5 @@
 #include "State.h"
 
 // This is the one and only definition
-State systemState = LIGHT_SLEEP;
+SystemState systemState = LIGHT_SLEEP;
+StableState stableState = SENSE;
