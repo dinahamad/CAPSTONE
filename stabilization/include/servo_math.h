@@ -41,5 +41,5 @@
 
 
 // Troubleshooting
-bool isHandIMUConnected(){return imuConnected[HAND_IMU_INDEX];
-bool isForearmIMUConnected(){return imuConnected[FOREARM_IMU_INDEX];}
+// bool isHandIMUConnected(){return imuConnected[HAND_IMU_INDEX];
+// bool isForearmIMUConnected(){return imuConnected[FOREARM_IMU_INDEX];}
