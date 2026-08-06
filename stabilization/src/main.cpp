@@ -11,6 +11,7 @@
 
 #include "pins.h"
 #include "globals.h"
+#include "tremor_detection_improved.h"
 
 
 // ============================================================
@@ -48,6 +49,8 @@ void sendIMUData(
 
 void sendStatus();
 void readIMUs();
+void handleSerialCommands();
+void printTremorTelemetry(uint64_t now_us);
 
 // ============================================================
 // BLE SERVER CALLBACKS
@@ -142,9 +145,10 @@ class CommandCallbacks : public BLECharacteristicCallbacks
         else if (command == "RESET")
         {
             resetOrientation();
+            TremorControl::reset(0.0f);
 
             Serial.println(
-                "ORIENTATION RESET"
+                "ORIENTATION AND TREMOR DETECTOR RESET"
             );
         }
     }
@@ -398,6 +402,8 @@ void calibrateIMUs()
     systemRunning =
         false;
 
+    TremorControl::disable();
+
     calibrationComplete =
         false;
 
@@ -601,6 +607,7 @@ void calibrateIMUs()
         true;
 
     resetOrientation();
+    TremorControl::reset(0.0f);
 
     Serial.println();
     Serial.println(
@@ -630,6 +637,8 @@ void startSystem()
     }
 
     resetOrientation();
+    TremorControl::reset(0.0f);
+    TremorControl::enable();
 
     startTime_us =
         micros();
@@ -652,6 +661,8 @@ void stopSystem()
 {
     systemRunning =
         false;
+
+    TremorControl::disable();
 
     Serial.println(
         "SYSTEM STOPPED"
@@ -907,6 +918,17 @@ void readIMUs()
 
     calculateRelativeOrientation();
 
+    // Up/down wrist tremor uses relative pitch (axis 1).
+    // The detector separates faster oscillation from slow intentional motion.
+    uint64_t controlNow_us = micros();
+    TremorControl::update(
+        relativeOrientation[1],
+        controlNow_us
+    );
+
+    // Print detector output at 10 Hz for Serial Monitor / Serial Plotter.
+    printTremorTelemetry(controlNow_us);
+
     // Send BLE packet
 
     static uint64_t lastSendTime =
@@ -930,6 +952,110 @@ void readIMUs()
             now - startTime_us
         );
     }
+}
+
+
+// ============================================================
+// SERIAL TEST COMMANDS
+// ============================================================
+
+void handleSerialCommands()
+{
+    if (!Serial.available())
+    {
+        return;
+    }
+
+    char command = (char) Serial.read();
+
+    // Ignore line endings from the Serial Monitor.
+    if (command == '\n' || command == '\r')
+    {
+        return;
+    }
+
+    command = (char) toupper(command);
+
+    if (command == 'C')
+    {
+        calibrateIMUs();
+    }
+    else if (command == 'S')
+    {
+        startSystem();
+    }
+    else if (command == 'X')
+    {
+        stopSystem();
+    }
+    else if (command == 'R')
+    {
+        resetOrientation();
+        TremorControl::reset(0.0f);
+        digitalWrite(LED_BUILTIN, LOW);
+        Serial.println("ORIENTATION AND TREMOR DETECTOR RESET");
+    }
+    else
+    {
+        Serial.println("Commands: C=CALIBRATE, S=START, X=STOP, R=RESET");
+    }
+}
+
+// ============================================================
+// TREMOR DETECTION SERIAL OUTPUT
+//
+// Output at 10 Hz:
+// Human-readable output at 10 Hz:
+// WristPitch:..., Filtered:..., Envelope:..., PID:..., Tremor: DETECTED/NOT DETECTED
+// ============================================================
+
+void printTremorTelemetry(uint64_t now_us)
+{
+    static uint64_t lastPrint_us = 0;
+
+    if (now_us - lastPrint_us < 100000)
+    {
+        return;
+    }
+
+    lastPrint_us = now_us;
+
+    const TremorControl::State &state = TremorControl::getState();
+
+    // Keep the built-in LED synchronized with the current state.
+    digitalWrite(
+        LED_BUILTIN,
+        state.tremorDetected ? HIGH : LOW
+    );
+
+    Serial.print("WristPitch: ");
+    Serial.print(state.wristPitchDeg, 3);
+
+    Serial.print(" | Filtered: ");
+    Serial.print(state.tremorPitchDeg, 3);
+
+    Serial.print(" | Envelope: ");
+    Serial.print(state.tremorEnvelopeDeg, 3);
+
+    Serial.print(" | Frequency: ");
+    Serial.print(state.estimatedFrequencyHz, 2);
+    Serial.print(" Hz");
+
+    Serial.print(" | HalfCycles: ");
+    Serial.print(state.validHalfCycles);
+
+    Serial.print(" | Pattern: ");
+    Serial.print(state.frequencyValid ? "VALID" : "INVALID");
+
+    Serial.print(" | PID: ");
+    Serial.print(state.pidCorrectionDeg, 3);
+
+    Serial.print(" | Tremor: ");
+    Serial.println(
+        state.tremorDetected
+            ? "DETECTED"
+            : "NOT DETECTED"
+    );
 }
 
 // ============================================================
@@ -1070,6 +1196,32 @@ void setup()
     );
 
     // ========================================================
+    // INITIALIZE TREMOR DETECTOR
+    // ========================================================
+
+    pinMode(LED_BUILTIN, OUTPUT);
+    digitalWrite(LED_BUILTIN, LOW);
+
+    TremorControl::Settings tremorSettings;
+    tremorSettings.highPassHz = 3.0f;
+    tremorSettings.lowPassHz = 12.0f;
+    tremorSettings.envelopeHz = 3.0f;
+    tremorSettings.detectOnDeg = 0.65f;
+    tremorSettings.detectOffDeg = 0.35f;
+    tremorSettings.minTremorHz = 3.0f;
+    tremorSettings.maxTremorHz = 12.0f;
+    tremorSettings.zeroCrossDeadbandDeg = 0.12f;
+    tremorSettings.requiredValidHalfCycles = 6;
+    tremorSettings.oscillationTimeoutMs = 350;
+    tremorSettings.detectOffHoldMs = 350;
+
+    // Detection-only test: PID is calculated, but servos are not attached.
+    tremorSettings.actuatorEnabled = false;
+    tremorSettings.maxCorrectionDeg = 5.0f;
+
+    TremorControl::begin(tremorSettings);
+
+    // ========================================================
     // INITIALIZE SPI
     // ========================================================
 
@@ -1177,6 +1329,10 @@ void setup()
     Serial.println(
         "Run CALIBRATE before START."
     );
+
+    Serial.println(
+        "Serial commands: C=CALIBRATE, S=START, X=STOP, R=RESET"
+    );
 }
 
 // ============================================================
@@ -1185,6 +1341,8 @@ void setup()
 
 void loop()
 {
+    handleSerialCommands();
+
     if (systemRunning)
     {
         readIMUs();
