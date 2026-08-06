@@ -30,15 +30,15 @@ void waitForRelease() {
 }
 
 
-bool validButtonPress() {
+bool validButtonPress(uint8_t BUTTON_NUMBER) {
 
   // Wait for HIGH transition
-  if (digitalRead(BUTTON_PIN) == HIGH) {
+  if (digitalRead(BUTTON_NUMBER) == HIGH) {
 
     unsigned long start = millis();
 
     // Confirm it stays HIGH
-    while (digitalRead(BUTTON_PIN) == HIGH) {
+    while (digitalRead(BUTTON_NUMBER) == HIGH) {
       delay(10);
     }
 
@@ -58,7 +58,8 @@ void goToLightSleep() {
 
   waitForRelease();
 
-  Serial.println("Mode = Sleeping");
+  Serial.println("Mode = Light Sleep");
+  //UARTLink_sendState(systemState);
 
   LED_off();
   LEDsoff();
@@ -73,8 +74,24 @@ void goToLightSleep() {
   esp_light_sleep_start();
 
   Serial.println("Mode = Awake");
+  //UARTLink_sendState(systemState);
 
-  systemState = NORMAL;
+  systemState = AWAKE;
 
   waitForRelease();
+}
+
+void changeStableState(){
+
+  if (stableState == SENSE) {
+    Serial.println("Mode = Stabilizing");
+    stableState = STABILIZE;
+    //UARTLink_sendState(stableState);
+  }
+  else if (stableState == STABILIZE) {
+    Serial.println("Mode = Only sensing");
+    stableState = SENSE;
+    //UARTLink_sendState(stableState);
+  }
+
 }
