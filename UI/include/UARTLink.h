@@ -3,6 +3,7 @@
 #include "State.h"
 
 void UARTLink_init();
-bool UARTLink_sendState(State state);
+bool UARTLink_sendState(systemState);
+bool UARTLink_sendState(stableState);
 
 #endif
