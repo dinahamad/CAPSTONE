@@ -7,9 +7,7 @@
 // Troubleshooting
 bool isHandIMUConnected(){return imuConnected[0];}
 bool isForearmIMUConnected(){return imuConnected[1];}
-bool isTopServoConnected(){return topServoConnected;}
-bool isBottomServoConnected(){return bottomServoConnected;}
-bool isEverythingConnected(){return isHandIMUConnected() && isForearmIMUConnected() && isTopServoConnected() && isBottomServoConnected();}
+bool isServosConnected(){return servosConnected[0] && servosConnected[1];}
 
 
 
