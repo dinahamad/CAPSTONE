@@ -1,12 +1,17 @@
 #ifndef STATE_H
 #define STATE_H
 
-enum State {
+enum SystemState {
     LIGHT_SLEEP,
-    NORMAL
+    AWAKE
 };
 
-// This tells other files the variable exists
-extern State systemState;
+enum StableState {
+    SENSE,
+    STABILIZE
+};
+
+extern SystemState systemState;
+extern StableState stableState;
 
 #endif
