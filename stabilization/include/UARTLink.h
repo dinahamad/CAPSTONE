@@ -3,11 +3,9 @@
 #include "State.h"
 
 void UARTLink_init();
-bool UARTLink_sendState(SystemState state);
-bool UARTLink_sendState(StableState state);
 void UARTLink_receive();
-
-float UARTLink_getSlaveBattery();
-
+void shutdownBeforeSleep();
+void goToLightSleep();
+void UARTLink_update();
 
 #endif
