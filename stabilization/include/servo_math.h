@@ -5,9 +5,9 @@
 // float getRelativeOrientation{return relativeOrientation;} // should be a degree value btween 0 -> 180deg
 
 // Troubleshooting
-bool isHandIMUConnected(){return imuConnected[0];}
-bool isForearmIMUConnected(){return imuConnected[1];}
-bool isServosConnected(){return servosConnected[0] && servosConnected[1];}
+//bool isHandIMUConnected(){return imuConnected[0];}
+//bool isForearmIMUConnected(){return imuConnected[1];}
+//bool isServosConnected(){return servosConnected[0] && servosConnected[1];}
 
 
 
@@ -26,9 +26,9 @@ bool isServosConnected(){return servosConnected[0] && servosConnected[1];}
 // float yawAngleHand(){return orientation[HAND_IMU][YAW];}
 
 // of forearm IMU
-float forearmRoll(){return orientation[FOREARM_IMU][ROLL];}
-float forearmPitch(){return orientation[FOREARM_IMU][PITCH];}
-float forearmYaw(){return orientation[FOREARM_IMU][YAW];}
+//float forearmRoll(){return orientation[FOREARM_IMU][ROLL];}
+//float forearmPitch(){return orientation[FOREARM_IMU][PITCH];}
+//float forearmYaw(){return orientation[FOREARM_IMU][YAW];}
 
 // angle relative difference between hand and forearm - all basic uses this
 // float wristRoll(){return relativeOrientation[ROLL];}
