@@ -21,7 +21,7 @@ void UARTLink_init()
 #endif
 }
 
-void shutdownBeforeSleep()
+void shutdownBeforeSleep() // servo slacks
 {
     // Disable motors
     // Disable sensors
