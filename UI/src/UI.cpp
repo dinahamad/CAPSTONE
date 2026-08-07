@@ -79,6 +79,7 @@ void goToLightSleep() {
 
   Serial.println("Mode = Light Sleep");
   systemState = LIGHT_SLEEP;
+  stableState = SENSE;
   UARTLink_sendState(systemState);
 
   LED_off();
