@@ -6,6 +6,7 @@
 #include "Battery.h"
 #include "driver/uart.h"
 #include "Wake.h"
+#include "servo.h" // dina added
 
 static volatile bool ackReceived = false;
 
@@ -24,6 +25,8 @@ void UARTLink_init()
 void shutdownBeforeSleep() // servo slacks
 {
     // Disable motors
+    servosSlack(); //dina added
+    endProgramServos(); //dina added
     // Disable sensors
     // Save data if needed
 
