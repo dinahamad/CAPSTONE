@@ -6,6 +6,7 @@
 #include "UARTLink.h"
 #include "Pins.h"
 
+
 void setup()
 {
 
@@ -25,7 +26,7 @@ void loop()
     UARTLink_receive();
     UARTLink_update();
     
-    if (stableState == SENSE)
+    if (stableState == SENSE) // servos in slack
     {
         // IMU sensing only
     }
