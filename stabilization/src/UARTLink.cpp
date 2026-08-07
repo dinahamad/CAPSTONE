@@ -92,15 +92,14 @@ void goToLightSleep()
 {
     shutdownBeforeSleep();
 
-    Serial.print("Wake pin before sleep: ");
-    Serial.println(digitalRead(WAKE_IN_PIN));
-
     esp_sleep_enable_ext0_wakeup(
         (gpio_num_t)WAKE_IN_PIN,
         HIGH
     );
 
     Serial.println("Entering light sleep");
+
+    delay(1000);
 
     esp_light_sleep_start();
 
