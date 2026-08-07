@@ -11,7 +11,8 @@
 
 #include "pins.h"
 #include "globals.h"
-#include "tremor_detection_improved.h"
+#include "tremor_detection.h"
+#include "servo_control.h"
 
 
 // ============================================================
@@ -51,6 +52,7 @@ void sendStatus();
 void readIMUs();
 void handleSerialCommands();
 void printTremorTelemetry(uint64_t now_us);
+void applyTremorServoOutput();
 
 // ============================================================
 // BLE SERVER CALLBACKS
@@ -147,8 +149,13 @@ class CommandCallbacks : public BLECharacteristicCallbacks
             resetOrientation();
             TremorControl::reset(0.0f);
 
+            if (areServosEnabled())
+            {
+                originAngles();
+            }
+
             Serial.println(
-                "ORIENTATION AND TREMOR DETECTOR RESET"
+                "ORIENTATION, TREMOR DETECTOR, AND SERVOS RESET"
             );
         }
     }
@@ -404,6 +411,11 @@ void calibrateIMUs()
 
     TremorControl::disable();
 
+    if (areServosEnabled())
+    {
+        originAngles();
+    }
+
     calibrationComplete =
         false;
 
@@ -640,6 +652,21 @@ void startSystem()
     TremorControl::reset(0.0f);
     TremorControl::enable();
 
+    // servo_control.cpp is the only module that attaches the physical servos.
+    // The tremor detector calculates PID only; actuatorEnabled remains false.
+    if (!areServosEnabled())
+    {
+        setupServos();
+    }
+
+    servosConnected[0] = areServosEnabled();
+    servosConnected[1] = areServosEnabled();
+
+    if (areServosEnabled())
+    {
+        originAngles();
+    }
+
     startTime_us =
         micros();
 
@@ -663,6 +690,19 @@ void stopSystem()
         false;
 
     TremorControl::disable();
+
+    if (areServosEnabled())
+    {
+        // Return to the mechanically safe neutral position first.
+        originAngles();
+        delay(300);
+
+        // Detach so the servos do not continue applying torque while stopped.
+        endProgramServos();
+    }
+
+    servosConnected[0] = false;
+    servosConnected[1] = false;
 
     Serial.println(
         "SYSTEM STOPPED"
@@ -720,12 +760,12 @@ void sendStatus()
         : "DISCONNECTED,";
 
     message +=
-        servoConnected[0]
+        servosConnected[0]
         ? "CONNECTED,"
         : "DISCONNECTED,";
 
     message +=
-        servoConnected[1]
+        servosConnected[1]
         ? "CONNECTED,"
         : "DISCONNECTED,";
 
@@ -926,6 +966,9 @@ void readIMUs()
         controlNow_us
     );
 
+    // Apply the detector's PID output to the physical servos.
+    applyTremorServoOutput();
+
     // Print detector output at 10 Hz for Serial Monitor / Serial Plotter.
     printTremorTelemetry(controlNow_us);
 
@@ -952,6 +995,86 @@ void readIMUs()
             now - startTime_us
         );
     }
+}
+
+
+// ============================================================
+// APPLY VOLUNTARY WRIST FOLLOW + TREMOR CORRECTION TO SERVOS
+//
+// The servo command contains two parts:
+//
+//   1. voluntaryPitchDeg:
+//      The slow/intended wrist movement estimated by the detector.
+//      The servos follow this movement so the mechanism does not
+//      hold the wrist at the fixed neutral position.
+//
+//   2. pidCorrectionDeg:
+//      The opposing correction calculated from the filtered tremor.
+//      This term is used only while tremor is detected.
+//
+// Combined command:
+//   servo offset = voluntary follow + tremor PID correction
+//
+// servo_control.cpp remains the only module that owns and writes
+// the physical Servo objects.
+// ============================================================
+
+void applyTremorServoOutput()
+{
+    if (!areServosEnabled())
+    {
+        return;
+    }
+
+    const TremorControl::State &state =
+        TremorControl::getState();
+
+    if (!state.enabled)
+    {
+        originAngles();
+        return;
+    }
+
+    // Start conservatively. A gain of 1.0 means one degree of estimated
+    // intended wrist pitch produces one degree of servo offset.
+    constexpr float VOLUNTARY_FOLLOW_GAIN = 1.0f;
+
+    // Prevent large intentional wrist movements from commanding the
+    // mechanism too far during early testing. The servo module applies
+    // its own mechanical limits as an additional safety layer.
+    constexpr float MAX_VOLUNTARY_FOLLOW_DEG = 20.0f;
+
+    float voluntaryOffsetDeg =
+        state.voluntaryPitchDeg * VOLUNTARY_FOLLOW_GAIN;
+
+    voluntaryOffsetDeg = constrain(
+        voluntaryOffsetDeg,
+        -MAX_VOLUNTARY_FOLLOW_DEG,
+        MAX_VOLUNTARY_FOLLOW_DEG
+    );
+
+    // The detector sets pidCorrectionDeg to zero when tremor is not
+    // detected, but the explicit condition makes the intended behavior clear.
+    const float tremorCorrectionDeg =
+        state.tremorDetected
+            ? state.pidCorrectionDeg
+            : 0.0f;
+
+    const float combinedOffsetDeg =
+        voluntaryOffsetDeg + tremorCorrectionDeg;
+
+    // Mirrored servo motion. If the mechanism moves backward, reverse
+    // both signs rather than changing only one servo.
+    const float topTargetDeg =
+        TOP_SERVO_ORIGIN_ANGLE + combinedOffsetDeg;
+
+    const float bottomTargetDeg =
+        BOTTOM_SERVO_ORIGIN_ANGLE - combinedOffsetDeg;
+
+    setServoAngles(
+        topTargetDeg,
+        bottomTargetDeg
+    );
 }
 
 
@@ -992,8 +1115,14 @@ void handleSerialCommands()
     {
         resetOrientation();
         TremorControl::reset(0.0f);
+
+        if (areServosEnabled())
+        {
+            originAngles();
+        }
+
         digitalWrite(LED_BUILTIN, LOW);
-        Serial.println("ORIENTATION AND TREMOR DETECTOR RESET");
+        Serial.println("ORIENTATION, TREMOR DETECTOR, AND SERVOS RESET");
     }
     else
     {
@@ -1047,8 +1176,17 @@ void printTremorTelemetry(uint64_t now_us)
     Serial.print(" | Pattern: ");
     Serial.print(state.frequencyValid ? "VALID" : "INVALID");
 
+    Serial.print(" | Voluntary: ");
+    Serial.print(state.voluntaryPitchDeg, 3);
+
     Serial.print(" | PID: ");
     Serial.print(state.pidCorrectionDeg, 3);
+
+    Serial.print(" | TopServo: ");
+    Serial.print(getTopServoAngle());
+
+    Serial.print(" | BottomServo: ");
+    Serial.print(getBottomServoAngle());
 
     Serial.print(" | Tremor: ");
     Serial.println(

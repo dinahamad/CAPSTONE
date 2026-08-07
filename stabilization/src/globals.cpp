@@ -63,7 +63,7 @@ float accelBias[NUM_IMUS][3] = {
     {0.0f, 0.0f, 0.0f}
 };
 
-bool servoConnected[2] = {
+bool servosConnected[2] = {
     false,
     false
 };
