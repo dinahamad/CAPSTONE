@@ -27,6 +27,7 @@ void shutdownBeforeSleep() // servo slacks
     // Disable motors
     servosSlack(); //dina added
     endProgramServos(); //dina added
+    stableState = SENSE;
     // Disable sensors
     // Save data if needed
 
@@ -74,6 +75,13 @@ void UARTLink_receive()
             Link.println("ACK");
 
             stableState = STABILIZE;
+        }
+        else if (command == "CALIBRATE")
+        {
+            Link.println("ACK");
+        
+            // Run calibration here
+            // calibrateSensors();
         }
     }
 
