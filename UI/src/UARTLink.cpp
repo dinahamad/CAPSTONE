@@ -86,6 +86,13 @@ bool UARTLink_sendState(StableState state)
 #endif
 }
 
+void UARTLink_sendCalibrate()
+{
+#ifdef USE_UART_LINK
+    Link.println("CALIBRATE");
+#endif
+}
+
 void UARTLink_receive()
 {
 #ifdef USE_UART_LINK
