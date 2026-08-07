@@ -29,10 +29,12 @@ void loop()
     if (stableState == SENSE) // servos in slack
     {
         // IMU sensing only
+        servosSlack(); // dina added
     }
     else if (stableState == STABILIZE)
     {
         // run stabilization algorithm
+        originAngles(); // dina added
     }
 
 
