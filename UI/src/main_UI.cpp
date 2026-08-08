@@ -44,6 +44,8 @@ void loop() {
 
   float total_battery = (UI_battery+Stabil_battery)/2;
 
+  delay(100);
+
   // Update battery/charging LEDs continuously
   ChargeLED_update(total_battery, usb);
 
