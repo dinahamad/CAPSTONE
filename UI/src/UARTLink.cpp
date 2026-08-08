@@ -102,8 +102,8 @@ void UARTLink_receive()
         String command = Link.readStringUntil('\n');
         command.trim();
 
-        Serial.print("UART RX: ");
-        Serial.println(command);
+        // Serial.print("UART RX: ");
+        // Serial.println(command);
 
         if (command == "ACK")
         {
