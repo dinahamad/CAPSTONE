@@ -1,5 +1,6 @@
 #include <Arduino.h>
 #include <esp_sleep.h>
+#include "UI.h"
 #include "PowerLED.h"
 #include "Battery.h"
 #include "ChargeLED.h"
@@ -31,7 +32,7 @@ void waitForRelease() {
 }
 
 
-bool validButtonPress(uint8_t BUTTON_NUMBER) {
+unsigned long validButtonPress(uint8_t BUTTON_NUMBER) {
 
   // Wait for HIGH transition
   if (digitalRead(BUTTON_NUMBER) == HIGH) {
@@ -48,11 +49,11 @@ bool validButtonPress(uint8_t BUTTON_NUMBER) {
 
     // HIGH -> LOW completed
     if (duration >= pressTime) {
-      return true;
+      return duration;
     }
   }
 
-  return false;
+  return 0;
 }
 
 void Wake_init()
@@ -63,12 +64,12 @@ void Wake_init()
 
 void Wake_slave()
 {
-    Serial.println("WAKE HIGH");
+    // Serial.println("WAKE HIGH");
 
     digitalWrite(WAKE_OUT_PIN, HIGH);
     delay(1000);
 
-    Serial.println("WAKE LOW");
+    // Serial.println("WAKE LOW");
 
     digitalWrite(WAKE_OUT_PIN, LOW);
 }
@@ -81,11 +82,12 @@ void goToLightSleep() {
   systemState = LIGHT_SLEEP;
   stableState = SENSE;
   UARTLink_sendState(systemState);
+  UARTLink_sendState(stableState);
 
   LED_off();
   LEDsoff();
 
-  delay(50);
+  delay(100);
 
   esp_sleep_enable_ext0_wakeup(
       (gpio_num_t)BUTTON_PIN,
