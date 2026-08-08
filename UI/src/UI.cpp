@@ -64,12 +64,8 @@ void Wake_init()
 
 void Wake_slave()
 {
-    // Serial.println("WAKE HIGH");
-
     digitalWrite(WAKE_OUT_PIN, HIGH);
     delay(1000);
-
-    // Serial.println("WAKE LOW");
 
     digitalWrite(WAKE_OUT_PIN, LOW);
 }

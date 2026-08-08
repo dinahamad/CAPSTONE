@@ -37,21 +37,12 @@ void loop() {
   float UI_battery = Battery_getPercentage();
   bool usb = USB_connected();
   
-  // Serial.print("UI Charge: ");
-  // Serial.print(UI_battery, 1);
-  // Serial.println("%");
-  
   UARTLink_receive();
-  float Stabil_battery = UARTLink_getSlaveBattery();
 
-  // Serial.print("Stabil. Charge: ");
-  // Serial.print(Stabil_battery, 1);
-  // Serial.println("%");
+  float Stabil_battery = UARTLink_getSlaveBattery();
+  delay(50);
 
   float total_battery = (UI_battery+Stabil_battery)/2;
-  // Serial.print("Total. Charge: ");
-  // Serial.print(total_battery, 1);
-  // Serial.println("%");
 
   // Update battery/charging LEDs continuously
   ChargeLED_update(total_battery, usb);
@@ -81,6 +72,7 @@ void loop() {
 
         if (stableState == SENSE && duration >= calibrationPressTime ){
           UARTLink_sendCalibrate();
+          Serial.println("Calibrating...");
         }
         else{
           changeStableState();
