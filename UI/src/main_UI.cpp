@@ -10,6 +10,7 @@
 
 unsigned long lastPress = 0;
 const unsigned long lockoutTime = 1000;   // ignore repeat presses
+const unsigned long calibrationPressTime = 2000;      // must hold >100ms
 
 void setup() {
 
@@ -36,21 +37,21 @@ void loop() {
   float UI_battery = Battery_getPercentage();
   bool usb = USB_connected();
   
-  Serial.print("UI Charge: ");
-  Serial.print(UI_battery, 1);
-  Serial.println("%");
+  // Serial.print("UI Charge: ");
+  // Serial.print(UI_battery, 1);
+  // Serial.println("%");
   
   UARTLink_receive();
   float Stabil_battery = UARTLink_getSlaveBattery();
 
-  Serial.print("Stabil. Charge: ");
-  Serial.print(Stabil_battery, 1);
-  Serial.println("%");
+  // Serial.print("Stabil. Charge: ");
+  // Serial.print(Stabil_battery, 1);
+  // Serial.println("%");
 
   float total_battery = (UI_battery+Stabil_battery)/2;
-  Serial.print("Total. Charge: ");
-  Serial.print(total_battery, 1);
-  Serial.println("%");
+  // Serial.print("Total. Charge: ");
+  // Serial.print(total_battery, 1);
+  // Serial.println("%");
 
   // Update battery/charging LEDs continuously
   ChargeLED_update(total_battery, usb);
@@ -74,11 +75,17 @@ void loop() {
         goToLightSleep();
       }
 
-      if (validButtonPress(STABLE_PIN)) {
+      if (unsigned long duration = validButtonPress(STABLE_PIN)) {
 
         lastPress = millis();
 
-        changeStableState();
+        if (stableState == SENSE && duration >= calibrationPressTime ){
+          UARTLink_sendCalibrate();
+        }
+        else{
+          changeStableState();
+        }
+
       }
     }
   }
