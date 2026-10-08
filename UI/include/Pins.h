@@ -16,9 +16,9 @@ constexpr uint8_t CHARGE_LED2 = 6;
 constexpr uint8_t CHARGE_LED3 = 7;
 
 // Charging LED
-constexpr uint8_t LED_RED   = 15;
-constexpr uint8_t LED_GREEN = 32;
-constexpr uint8_t LED_BLUE  = 14;
+constexpr uint8_t LED_RED   = 8;
+constexpr uint8_t LED_GREEN = 9;
+constexpr uint8_t LED_BLUE  = 10;
 
 // Power LED
 constexpr uint8_t RED_CH   = 0;
