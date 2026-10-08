@@ -9,7 +9,7 @@ constexpr uint8_t STABLE_PIN = 39;
 constexpr uint8_t USB_VBUS_PIN = 36;
 
 // Battery
-constexpr uint8_t VBAT_PIN = A13;
+constexpr uint8_t VBAT_PIN = 4;
 
 constexpr uint8_t CHARGE_LED1 = 5;
 constexpr uint8_t CHARGE_LED2 = 6;
