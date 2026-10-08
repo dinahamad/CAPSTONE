@@ -21,9 +21,9 @@ constexpr uint8_t LED_GREEN = 9;
 constexpr uint8_t LED_BLUE  = 10;
 
 // Power LED
-constexpr uint8_t RED_CH   = 0;
-constexpr uint8_t GREEN_CH = 1;
-constexpr uint8_t BLUE_CH  = 2;
+constexpr uint8_t RED_CH   = 11;
+constexpr uint8_t GREEN_CH = 12;
+constexpr uint8_t BLUE_CH  = 13;
 
 constexpr uint16_t PWM_FREQ = 5000;
 constexpr uint8_t PWM_RES   = 8;
