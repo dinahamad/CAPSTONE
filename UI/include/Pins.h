@@ -11,9 +11,9 @@ constexpr uint8_t USB_VBUS_PIN = 36;
 // Battery
 constexpr uint8_t VBAT_PIN = A13;
 
-constexpr uint8_t CHARGE_LED1 = 4;
-constexpr uint8_t CHARGE_LED2 = 5;
-constexpr uint8_t CHARGE_LED3 = 6;
+constexpr uint8_t CHARGE_LED1 = 5;
+constexpr uint8_t CHARGE_LED2 = 6;
+constexpr uint8_t CHARGE_LED3 = 7;
 
 // Charging LED
 constexpr uint8_t LED_RED   = 15;
