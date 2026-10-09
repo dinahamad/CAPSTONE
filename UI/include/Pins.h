@@ -29,8 +29,8 @@ constexpr uint16_t PWM_FREQ = 5000;
 constexpr uint8_t PWM_RES   = 8;
 
 // UART Link
-constexpr uint8_t LINK_TX_PIN = 43; 
-constexpr uint8_t LINK_RX_PIN = 44;
+constexpr uint8_t LINK_TX_PIN = 37; 
+constexpr uint8_t LINK_RX_PIN = 38;
 
 // Wake line
 constexpr uint8_t WAKE_OUT_PIN = 36;
