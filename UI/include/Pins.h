@@ -6,7 +6,7 @@ constexpr uint8_t LED_BRIGHTNESS = 10;   // 0-255 (lower = dimmer)
 // Main
 constexpr uint8_t BUTTON_PIN = 37;
 constexpr uint8_t STABLE_PIN = 39;
-constexpr uint8_t USB_VBUS_PIN = 36;
+//constexpr uint8_t USB_VBUS_PIN = 36;
 
 // Battery
 constexpr uint8_t VBAT_PIN = 4;
@@ -33,7 +33,7 @@ constexpr uint8_t LINK_RX_PIN = 7;
 constexpr uint8_t LINK_TX_PIN = 8;
 
 // Wake line
-constexpr uint8_t WAKE_OUT_PIN = 26;
+constexpr uint8_t WAKE_OUT_PIN = 36;
 
 // Comment this out to disable UART communication
 #define USE_UART_LINK
