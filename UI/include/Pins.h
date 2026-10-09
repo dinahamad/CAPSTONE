@@ -4,8 +4,8 @@
 constexpr uint8_t LED_BRIGHTNESS = 10;   // 0-255 (lower = dimmer)
 
 // Main
-constexpr uint8_t BUTTON_PIN = 37;
-constexpr uint8_t STABLE_PIN = 39;
+constexpr uint8_t BUTTON_PIN = 34;
+constexpr uint8_t STABLE_PIN = 35;
 //constexpr uint8_t USB_VBUS_PIN = 36;
 
 // Battery
