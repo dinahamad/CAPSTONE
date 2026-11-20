@@ -4,7 +4,8 @@
 void LED_init();
 void LED_sleep();
 void LED_awake();
-void LED_charging();
+void LED_stable();
 void LED_off();
+void LED_lowpower();
 
 #endif

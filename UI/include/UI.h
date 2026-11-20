@@ -1,10 +1,8 @@
 #ifndef UI_H
 #define UI_H
 
-ButtonPress getStableButtonPress();
-
-void USB_detect_init();
-bool USB_connected();
+// void USB_detect_init();
+// bool USB_connected();
 
 void Button_waitForRelease();
 unsigned long validButtonPress(uint8_t BUTTON_NUMBER);

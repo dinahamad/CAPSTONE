@@ -6,9 +6,9 @@ void UARTLink_init();
 bool UARTLink_sendState(SystemState state);
 bool UARTLink_sendState(StableState state);
 void UARTLink_sendCalibrate();
+void UARTLink_sendLowBattery();
 void UARTLink_receive();
-
-float UARTLink_getSlaveBattery();
+// float UARTLink_getSlaveBattery();
 
 
 #endif
