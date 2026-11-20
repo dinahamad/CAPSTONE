@@ -11,6 +11,10 @@
 unsigned long lastPress = 0;
 const unsigned long lockoutTime = 1000;   // ignore repeat presses
 const unsigned long calibrationPressTime = 2000;      // must hold >100ms
+bool batteryLow = false;
+
+unsigned long lastSend = 0;
+bool sendState = false;
 
 void setup() {
 
@@ -21,7 +25,7 @@ void setup() {
   Wake_init();
   Battery_init();
   ChargeLED_init();
-  USB_detect_init();
+  // USB_detect_init();
 
   UARTLink_init();
 
@@ -34,33 +38,54 @@ void setup() {
 
 void loop() {
 
-  float UI_battery = Battery_getPercentage();
-  bool usb = USB_connected();
+  float total_battery = Battery_getPercentage();
+  //bool usb = USB_connected();
+
+  Serial.println(total_battery);
+  batteryLow = Check_Battery_isLow();
+
+  if (batteryLow){
+    if (millis() - lastSend > 1000) {
+                lastSend = millis();
+                sendState = !sendState;
+                // send to rx/tx to other board and cut off power to servos!!!!!
+                UARTLink_sendLowBattery();
+            }   
+            
+        // power led red
+        LED_lowpower();
+
+        // flash charge leds
+        LowPower_flash();
+  }
+  else{
+      // Update battery/charging LEDs continuously
+    ChargeLED_update(total_battery, false);
+
+
+    // // Update main status LED
+    // if (usb) { 
+    //   LED_charging();   // Blue LED
+    //   LED_awake();      // Green LED
+    // }
+    // else {
+    //   LED_awake();      // Green LED
+    // }
+
+    if (stableState == STABILIZE){
+      LED_stable();
+    }
+    else{
+      LED_awake();
+    }
+
+  }
   
-  UARTLink_receive();
-
-  float Stabil_battery = UARTLink_getSlaveBattery();
-  delay(50);
-
-  float total_battery = (UI_battery+Stabil_battery)/2;
-  delay(100);
-
-  // Update battery/charging LEDs continuously
-  ChargeLED_update(total_battery, usb);
-
-  // Update main status LED
-  if (usb) { 
-    LED_charging();   // Blue LED
-  }
-  else {
-    LED_awake();      // Green LED
-  }
-
   if (systemState == AWAKE) {
 
     if (millis() - lastPress > lockoutTime) {
 
-      if (validButtonPress(BUTTON_PIN)) {
+      if (validButtonPress(POWER_PIN)) {
 
         lastPress = millis();
 

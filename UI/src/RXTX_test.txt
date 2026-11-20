@@ -1,0 +1,188 @@
+#include <Arduino.h>
+#include <esp_sleep.h>
+#include "LED.h"
+
+#define BUTTON_PIN 37//32
+
+//================ UART Link =================//
+// Comment out this line to disable TX/RX communication
+#define USE_UART_LINK
+
+#define LINK_RX_PIN 7
+#define LINK_TX_PIN 8
+
+#ifdef USE_UART_LINK
+HardwareSerial Link(1);
+#endif
+//============================================//
+
+enum State {
+  LIGHT_SLEEP,
+  NORMAL
+};
+
+State systemState = LIGHT_SLEEP;
+
+unsigned long lastPress = 0;
+int green;
+
+const unsigned long pressTime = 100;      // must hold >100ms
+const unsigned long lockoutTime = 1000;   // ignore repeat presses
+
+void goToLightSleep();
+bool validButtonPress();
+void waitForRelease();
+
+
+void waitForRelease() {
+  while (digitalRead(BUTTON_PIN) == HIGH) {
+    delay(10);
+  }
+}
+
+bool sendState(const char *state)
+{
+#ifdef USE_UART_LINK
+
+  for (int attempt = 0; attempt < 3; attempt++)
+  {
+    Link.println(state);
+
+    unsigned long start = millis();
+
+    while (millis() - start < 500)
+    {
+      if (Link.available())
+      {
+        String reply = Link.readStringUntil('\n');
+        reply.trim();
+
+        if (reply == "ACK")
+        {
+          Serial.println("ACK received.");
+          return true;
+        }
+      }
+    }
+
+    Serial.println("Retrying...");
+  }
+
+  Serial.println("No ACK received.");
+  return false;
+
+#else
+
+  return true;
+
+#endif
+}
+
+
+bool validButtonPress() {
+
+  // Wait for HIGH transition
+  if (digitalRead(BUTTON_PIN) == HIGH) {
+
+    unsigned long start = millis();
+
+    // Confirm it stays HIGH
+    while (digitalRead(BUTTON_PIN) == HIGH) {
+      delay(10);
+    }
+
+    unsigned long duration = millis() - start;
+
+
+    // HIGH -> LOW completed
+    if (duration >= pressTime) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+
+void setup() {
+
+  Serial.begin(115200);
+
+  #ifdef USE_UART_LINK
+  Link.begin(115200, SERIAL_8N1, LINK_RX_PIN, LINK_TX_PIN);
+  #endif
+
+  pinMode(BUTTON_PIN, INPUT);
+
+  LED_init();
+
+  Serial.println("Starting...");
+  delay(500);
+  green = 5;
+
+  goToLightSleep();
+}
+
+
+void loop() {
+
+  if (systemState == NORMAL) {
+
+    if (millis() - lastPress > lockoutTime) {
+
+      if (validButtonPress()) {
+        
+        //Serial.println("LOW -> HIGH -> LOW detected");
+
+        lastPress = millis();
+
+        systemState = LIGHT_SLEEP;
+
+        goToLightSleep();
+      }
+    }
+  }
+}
+
+
+void goToLightSleep() {
+
+  // Ensure button is LOW before sleeping
+  waitForRelease();
+
+  //Serial.println("Entering Light Sleep...");
+  Serial.println("Mode = Sleeping");
+
+  sendState("SLEEP");
+  // green = green + 2;
+  // Serial.print("Green = ");
+  // Serial.println(green);
+  LED_sleep();   // RED LED
+  
+  delay(50);
+
+  esp_sleep_enable_ext0_wakeup(
+    (gpio_num_t)BUTTON_PIN,
+    HIGH
+  );
+
+  esp_light_sleep_start();
+
+
+  // Wake occurred because LOW -> HIGH happened
+
+  //Serial.println("Wakeup -> NORMAL MODE");
+  Serial.println("Mode = Awake");
+
+  sendState("AWAKE");
+  LED_awake();   // BLUE LED
+
+  systemState = NORMAL;
+
+
+  // Ignore the wake-up press
+  // Wait until HIGH -> LOW before accepting another press
+  waitForRelease();
+
+  //Serial.println("Ready for next press");
+}

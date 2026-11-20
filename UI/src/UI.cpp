@@ -11,22 +11,22 @@
 const unsigned long pressTime = 100;      // must hold >100ms
 
 void Button_init() {
-    pinMode(BUTTON_PIN, INPUT);
+    pinMode(POWER_PIN, INPUT);
     pinMode(STABLE_PIN, INPUT);
 }
 
-void USB_detect_init() {
-    pinMode(USB_VBUS_PIN, INPUT);
-}
+// void USB_detect_init() {
+//     pinMode(USB_VBUS_PIN, INPUT);
+// }
 
-bool USB_connected()
-{
-    return analogRead(USB_VBUS_PIN) > 2000;
-}
+// bool USB_connected()
+// {
+//     return analogRead(USB_VBUS_PIN) > 2000;
+// }
 
 
 void waitForRelease() {
-  while (digitalRead(BUTTON_PIN) == HIGH) {
+  while (digitalRead(POWER_PIN) == HIGH) {
     delay(10);
   }
 }
@@ -74,19 +74,19 @@ void goToLightSleep() {
 
   waitForRelease();
 
+  LED_sleep();
+  LEDsoff();
+
   Serial.println("Mode = Light Sleep");
   systemState = LIGHT_SLEEP;
   stableState = SENSE;
   UARTLink_sendState(systemState);
   UARTLink_sendState(stableState);
 
-  LED_off();
-  LEDsoff();
-
   delay(100);
 
   esp_sleep_enable_ext0_wakeup(
-      (gpio_num_t)BUTTON_PIN,
+      (gpio_num_t)POWER_PIN,
       HIGH
   );
 

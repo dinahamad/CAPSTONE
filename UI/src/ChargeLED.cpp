@@ -2,8 +2,8 @@
 #include "ChargeLED.h"
 #include "Pins.h"
 
-unsigned long lastBlink = 0;
-bool blinkState = false;
+static unsigned long lastBlink2 = 0;
+static bool blinkState2 = false;
 
 
 void ChargeLED_init() {
@@ -33,19 +33,29 @@ void LEDsoff() {
     analogWrite(CHARGE_LED3, 0);
 }
 
+void LowPower_flash() {
+
+    if (millis() - lastBlink2 > 500) {
+        lastBlink2= millis();
+        blinkState2 = !blinkState2;
+    }
+
+    setLEDs(blinkState2, false, false);
+}
+
 
 void ChargeLED_update(float batteryPercent, bool usbConnected) {
 
-    if (millis() - lastBlink > 500) {
-        lastBlink = millis();
-        blinkState = !blinkState;
+    if (millis() - lastBlink2 > 500) {
+        lastBlink2 = millis();
+        blinkState2 = !blinkState2;
     }
 
 
     if (!usbConnected) {
 
         if (batteryPercent < 20) {
-            setLEDs(blinkState, false, false);
+            setLEDs(blinkState2, false, false);
         }
 
         else if (batteryPercent < 40) {
@@ -65,15 +75,15 @@ void ChargeLED_update(float batteryPercent, bool usbConnected) {
     else {
 
         if (batteryPercent < 33) {
-            setLEDs(blinkState, false, false);
+            setLEDs(blinkState2, false, false);
         }
 
         else if (batteryPercent < 66) {
-            setLEDs(true, blinkState, false);
+            setLEDs(true, blinkState2, false);
         }
 
         else if (batteryPercent < 100) {
-            setLEDs(true, true, blinkState);
+            setLEDs(true, true, blinkState2);
         }
 
         else {
@@ -81,3 +91,4 @@ void ChargeLED_update(float batteryPercent, bool usbConnected) {
         }
     }
 }
+

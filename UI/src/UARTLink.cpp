@@ -4,7 +4,6 @@
 #include "State.h"
 
 static volatile bool ackReceived = false;
-static float slaveBattery = 100.0;
 
 #ifdef USE_UART_LINK
 HardwareSerial Link(1);
@@ -93,6 +92,15 @@ void UARTLink_sendCalibrate()
 #endif
 }
 
+// Send low-battery shutdown command
+void UARTLink_sendLowBattery()
+{
+#ifdef USE_UART_LINK
+    Link.println("LOWBAT");
+    // Serial.println("Low battery sent to other board.");
+#endif
+}
+
 void UARTLink_receive()
 {
 #ifdef USE_UART_LINK
@@ -109,16 +117,16 @@ void UARTLink_receive()
         {
             ackReceived = true;
         }
-        else if (command.startsWith("BAT:"))
-        {
-            slaveBattery = command.substring(4).toFloat();
-        }
+        // else if (command.startsWith("BAT:"))
+        // {
+        //     slaveBattery = command.substring(4).toFloat();
+        // }
     }
 
 #endif
 }
 
-float UARTLink_getSlaveBattery()
-{
-    return slaveBattery;
-}
+// float UARTLink_getSlaveBattery()
+// {
+//     return slaveBattery;
+// }
